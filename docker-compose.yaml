@@ -5,7 +5,7 @@ services:
     depends_on:
       db:
         condition: service_started
-      migrate:
+      migration:
         condition: service_completed_successfully
     ports:
       - 8081:8080
@@ -16,10 +16,25 @@ services:
       - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
+    networks:
+      - default
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: ewallet
+
+  migration:
+    build: migrations
+    depends_on:
+      db:
+        condition: service_started
+    volumes:
+      - ./migrations:/migrations:ro
+    networks:
+      - default
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/ewallet?sslmode=disable
+    command: sh -c "sleep 10 && migrate -path /migrations -database $${DATABASE_URL} up"
 
   swagger-ui:
     image: swaggerapi/swagger-ui
@@ -32,3 +47,6 @@ services:
 
 volumes:
   db:
+
+networks:
+  default:
