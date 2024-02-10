@@ -1,0 +1,22 @@
+@startuml erd
+left to right direction
+hide circle
+
+entity wallet {
+    * wallet_id : UUID <<PK>>
+    --
+    * balance : NUMERIC(15, 2)
+}
+
+entity transfer {
+    * transfer_id : UUID <<PK>>
+    --
+    * time : TIMESTAMP
+    * from_wallet : UUID <<FK>>
+    * to_wallet : UUID <<FK>>
+    * amount : NUMERIC(15, 2)
+}
+
+wallet ||--o{ transfer
+wallet ||--o{ transfer
+@enduml
