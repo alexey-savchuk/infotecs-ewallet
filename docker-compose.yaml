@@ -2,14 +2,33 @@ version: "3"
 services:
   ewallet:
     build: .
+    depends_on:
+      db:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
     ports:
-      - "8081:8080"
+      - 8081:8080
+
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ewallet
 
   swagger-ui:
     image: swaggerapi/swagger-ui
     ports:
-      - "8082:8080"
+      - 8082:8080
     volumes:
       - ./api:/api:ro
     environment:
       SWAGGER_JSON: /api/openapi.yaml
+
+volumes:
+  db:
