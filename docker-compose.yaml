@@ -2,5 +2,14 @@ version: "3"
 services:
   ewallet:
     build: .
-    expose:
-      - "8080"
+    ports:
+      - "8081:8080"
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./api:/api:ro
+    environment:
+      SWAGGER_JSON: /api/openapi.yaml
