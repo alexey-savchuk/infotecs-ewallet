@@ -6,3 +6,5 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/shopspring/decimal v1.3.1
 )
+
+require go.uber.org/mock v0.4.0
