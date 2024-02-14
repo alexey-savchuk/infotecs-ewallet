@@ -22,18 +22,23 @@ func (wr *WalletRepository) Create(ctx context.Context) (*repository.DBWallet, e
 	query := `INSERT INTO wallet DEFAULT VALUES RETURNING wallet_id, balance`
 	row := wr.db.QueryRowContext(ctx, query)
 	wallet := &repository.DBWallet{}
-	if err := row.Scan(&wallet.WalletID, &wallet.Balance); err != nil {
+	err := row.Scan(&wallet.WalletID, &wallet.Balance)
+	if err != nil {
 		return nil, err
 	}
 	return wallet, nil
 }
 
 func (w *WalletRepository) GetByWalletID(ctx context.Context, walletID string) (*repository.DBWallet, error) {
-	query := `SELECT wallet_id, balance FROM wallet WHERE wallet_id = ?`
+	query := `SELECT wallet_id, balance FROM wallet WHERE wallet_id = $1`
 	row := w.db.QueryRowContext(ctx, query, walletID)
 	wallet := repository.DBWallet{}
-	if err := row.Scan(&wallet.WalletID, &wallet.Balance); err != nil {
-		return nil, customerrors.ErrWalletNotExists
+	err := row.Scan(&wallet.WalletID, &wallet.Balance)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, customerrors.ErrWalletNotExists
+		}
+		return nil, err
 	}
 	return &wallet, nil
 }

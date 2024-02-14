@@ -28,23 +28,23 @@ func TestTransferRepository_Create(t *testing.T) {
 		}
 
 		mock.ExpectBegin()
-		query := `SELECT balance FROM wallet WHERE wallet_id = \?`
+		query := `SELECT balance FROM wallet WHERE wallet_id = \$1`
 		mock.
 			ExpectQuery(query).
 			WithArgs(transfer.FromWallet).
 			WillReturnRows(sqlmock.NewRows([]string{"balance"}).AddRow(200.0))
-		query = `UPDATE wallet SET balance = balance \- \? WHERE wallet_id = \?`
+		query = `UPDATE wallet SET balance = balance \- \$1 WHERE wallet_id = \$2`
 		mock.
 			ExpectExec(query).
 			WithArgs(transfer.Amount, transfer.FromWallet).
 			WillReturnResult(sqlmock.NewResult(1, 1))
-		query = `UPDATE wallet SET balance = balance \+ \? WHERE wallet_id = \?`
+		query = `UPDATE wallet SET balance = balance \+ \$1 WHERE wallet_id = \$2`
 		mock.
 			ExpectExec(query).
 			WithArgs(transfer.Amount, transfer.ToWallet).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		query = `INSERT INTO transfer \(from_wallet, to_wallet, amount\)
-				 VALUES \(\?, \?, \?\)
+				 VALUES \(\$1, \$2, \$3\)
 				 RETURNING transfer_id, time, from_wallet, to_wallet, amount`
 		mock.
 			ExpectQuery(query).
@@ -83,7 +83,7 @@ func TestTransferRepository_Create(t *testing.T) {
 		}
 
 		mock.ExpectBegin()
-		query := `SELECT balance FROM wallet WHERE wallet_id = \?`
+		query := `SELECT balance FROM wallet WHERE wallet_id = \$1`
 		mock.
 			ExpectQuery(query).
 			WithArgs(transfer.FromWallet).
@@ -120,7 +120,7 @@ func TestTransferRepository_Create(t *testing.T) {
 		}
 
 		mock.ExpectBegin()
-		query := `SELECT balance FROM wallet WHERE wallet_id = \?`
+		query := `SELECT balance FROM wallet WHERE wallet_id = \$1`
 		mock.
 			ExpectQuery(query).
 			WithArgs(transfer.FromWallet).
@@ -157,17 +157,17 @@ func TestTransferRepository_Create(t *testing.T) {
 		}
 
 		mock.ExpectBegin()
-		query := `SELECT balance FROM wallet WHERE wallet_id = \?`
+		query := `SELECT balance FROM wallet WHERE wallet_id = \$1`
 		mock.
 			ExpectQuery(query).
 			WithArgs(transfer.FromWallet).
 			WillReturnRows(sqlmock.NewRows([]string{"balance"}).AddRow(200.0))
-		query = `UPDATE wallet SET balance = balance \- \? WHERE wallet_id = \?`
+		query = `UPDATE wallet SET balance = balance \- \$1 WHERE wallet_id = \$2`
 		mock.
 			ExpectExec(query).
 			WithArgs(transfer.Amount, transfer.FromWallet).
 			WillReturnResult(sqlmock.NewResult(1, 1))
-		query = `UPDATE wallet SET balance = balance \+ \? WHERE wallet_id = \?`
+		query = `UPDATE wallet SET balance = balance \+ \$1 WHERE wallet_id = \$2`
 		mock.
 			ExpectExec(query).
 			WithArgs(transfer.Amount, transfer.ToWallet).
@@ -202,16 +202,16 @@ func TestTransferRepository_GetAllByWalletID(t *testing.T) {
 		walletID := "1"
 
 		mock.ExpectBegin()
-		query := `SELECT wallet_id FROM wallet WHERE wallet_id = \?`
+		query := `SELECT wallet_id FROM wallet WHERE wallet_id = \$1`
 		mock.
 			ExpectQuery(query).
 			WithArgs(walletID).
 			WillReturnRows(sqlmock.NewRows([]string{"wallet_id"}).AddRow(walletID))
 		query = `SELECT transfer_id, time, from_wallet, to_wallet, amount
-				  FROM transfer WHERE from_wallet = \? OR to_wallet = \? ORDER BY 2 DESC`
+				  FROM transfer WHERE from_wallet = \$1 OR to_wallet = \$1 ORDER BY 2 DESC`
 		mock.
 			ExpectQuery(query).
-			WithArgs(walletID, walletID).
+			WithArgs(walletID).
 			WillReturnRows(
 				sqlmock.
 					NewRows([]string{"transfer_id", "time", "from_wallet", "to_wallet", "amount"}).
@@ -242,7 +242,7 @@ func TestTransferRepository_GetAllByWalletID(t *testing.T) {
 
 		walletID := "NotExistingID"
 		mock.ExpectBegin()
-		query := `SELECT wallet_id FROM wallet WHERE wallet_id = \?`
+		query := `SELECT wallet_id FROM wallet WHERE wallet_id = \$1`
 		mock.
 			ExpectQuery(query).
 			WithArgs(walletID).

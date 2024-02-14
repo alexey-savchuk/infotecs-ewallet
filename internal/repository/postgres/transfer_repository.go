@@ -27,7 +27,7 @@ func (tr *TransferRepository) Create(ctx context.Context, transfer *service.Tran
 	}
 	defer tx.Rollback() //nolint:errcheck
 
-	query := `SELECT balance FROM wallet WHERE wallet_id = ?`
+	query := `SELECT balance FROM wallet WHERE wallet_id = $1`
 	row := tx.QueryRowContext(ctx, query, transfer.FromWallet)
 	var balance decimal.Decimal
 	err = row.Scan(&balance)
@@ -38,19 +38,19 @@ func (tr *TransferRepository) Create(ctx context.Context, transfer *service.Tran
 		return nil, customerrors.ErrInsufficientFunds
 	}
 
-	query = `UPDATE wallet SET balance = balance - ? WHERE wallet_id = ?`
+	query = `UPDATE wallet SET balance = balance - $1 WHERE wallet_id = $2`
 	_, err = tx.ExecContext(ctx, query, transfer.Amount, transfer.FromWallet)
 	if err != nil {
 		return nil, customerrors.ErrFromWalletNotExists
 	}
-	query = `UPDATE wallet SET balance = balance + ? WHERE wallet_id = ?`
+	query = `UPDATE wallet SET balance = balance + $1 WHERE wallet_id = $2`
 	_, err = tx.ExecContext(ctx, query, transfer.Amount, transfer.ToWallet)
 	if err != nil {
 		return nil, customerrors.ErrToWalletNotExists
 	}
 
 	query = `INSERT INTO transfer (from_wallet, to_wallet, amount)
-			 VALUES (?, ?, ?)
+			 VALUES ($1, $2, $3)
 			 RETURNING transfer_id, time, from_wallet, to_wallet, amount`
 	row = tx.QueryRowContext(
 		ctx, query, transfer.FromWallet, transfer.ToWallet, transfer.Amount,
@@ -74,7 +74,7 @@ func (tr *TransferRepository) GetAllByWalletID(ctx context.Context, walletID str
 	}
 	defer tx.Rollback() //nolint:errcheck
 
-	query := `SELECT wallet_id FROM wallet WHERE wallet_id = ?`
+	query := `SELECT wallet_id FROM wallet WHERE wallet_id = $1`
 	row := tx.QueryRowContext(ctx, query, walletID)
 	err = row.Scan(&walletID)
 	if err != nil {
@@ -82,8 +82,8 @@ func (tr *TransferRepository) GetAllByWalletID(ctx context.Context, walletID str
 	}
 
 	query = `SELECT transfer_id, time, from_wallet, to_wallet, amount
-			  FROM transfer WHERE from_wallet = ? OR to_wallet = ? ORDER BY 2 DESC`
-	rows, err := tr.db.QueryContext(ctx, query, walletID, walletID)
+			  FROM transfer WHERE from_wallet = $1 OR to_wallet = $1 ORDER BY 2 DESC`
+	rows, err := tr.db.QueryContext(ctx, query, walletID)
 	if err != nil {
 		return nil, err
 	}

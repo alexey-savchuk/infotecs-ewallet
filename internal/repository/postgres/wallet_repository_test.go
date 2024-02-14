@@ -46,7 +46,7 @@ func TestWalletRepository_GetByWalletID(t *testing.T) {
 		defer db.Close()
 
 		walletID := "1"
-		query := `SELECT wallet_id, balance FROM wallet WHERE wallet_id = \?`
+		query := `SELECT wallet_id, balance FROM wallet WHERE wallet_id = \$1`
 		mock.
 			ExpectQuery(query).
 			WithArgs(walletID).
@@ -76,7 +76,7 @@ func TestWalletRepository_GetByWalletID(t *testing.T) {
 
 		walletID := "NotExistingID"
 		mock.
-			ExpectQuery(`SELECT wallet_id, balance FROM wallet WHERE wallet_id = \?`).
+			ExpectQuery(`SELECT wallet_id, balance FROM wallet WHERE wallet_id = \$1`).
 			WithArgs(walletID).
 			WillReturnError(sql.ErrNoRows)
 
