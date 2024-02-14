@@ -21,7 +21,7 @@ func NewTransferRepository(db *sql.DB) *TransferRepository {
 }
 
 func (tr *TransferRepository) Create(ctx context.Context, transfer *service.Transfer) (*repository.DBTransfer, error) {
-	tx, err := tr.db.BeginTx(ctx, nil)
+	tx, err := tr.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (tr *TransferRepository) Create(ctx context.Context, transfer *service.Tran
 }
 
 func (tr *TransferRepository) GetAllByWalletID(ctx context.Context, walletID string) ([]repository.DBTransfer, error) {
-	tx, err := tr.db.BeginTx(ctx, nil)
+	tx, err := tr.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable, ReadOnly: true})
 	if err != nil {
 		return nil, err
 	}
