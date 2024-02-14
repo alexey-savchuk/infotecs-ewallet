@@ -1,11 +1,11 @@
-name: main workflow
+name: develop workflow
 
 on:
   pull_request:
-    branches:
+    branches-ignore:
       - main
   push:
-    branches:
+    branches-ignore:
       - main
 
 jobs:
