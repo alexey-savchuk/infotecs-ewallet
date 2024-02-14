@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/alexey-savchuk/infotecs-ewallet/internal/customerrors"
 	"github.com/alexey-savchuk/infotecs-ewallet/internal/repository"
 )
 
@@ -32,7 +33,7 @@ func (w *WalletRepository) GetByWalletID(ctx context.Context, walletID string) (
 	row := w.db.QueryRowContext(ctx, query, walletID)
 	wallet := repository.DBWallet{}
 	if err := row.Scan(&wallet.WalletID, &wallet.Balance); err != nil {
-		return nil, err
+		return nil, customerrors.ErrWalletNotExists
 	}
 	return &wallet, nil
 }

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/alexey-savchuk/infotecs-ewallet/internal/customerrors"
 	"github.com/alexey-savchuk/infotecs-ewallet/internal/repository/postgres"
 )
 
@@ -73,7 +74,7 @@ func TestWalletRepository_GetByWalletID(t *testing.T) {
 		}
 		defer db.Close()
 
-		walletID := "1"
+		walletID := "NotExistingID"
 		mock.
 			ExpectQuery(`SELECT wallet_id, balance FROM wallet WHERE wallet_id = \?`).
 			WithArgs(walletID).
@@ -84,6 +85,9 @@ func TestWalletRepository_GetByWalletID(t *testing.T) {
 		_, err = wr.GetByWalletID(context.Background(), walletID)
 		if err == nil {
 			t.Errorf("expected error")
+		}
+		if err != customerrors.ErrWalletNotExists {
+			t.Errorf("unexpected error: %s, got %s", customerrors.ErrWalletNotExists, err)
 		}
 
 		err = mock.ExpectationsWereMet()
