@@ -35,6 +35,7 @@ func (ts *TransferService) Create(ctx context.Context, transferDTO *handlers.Tra
 	}
 
 	return &handlers.TransferDTO{
+		Time:       dbTransfer.Time.Format(time.RFC3339),
 		FromWallet: dbTransfer.FromWallet,
 		ToWallet:   dbTransfer.ToWallet,
 		Amount:     dbTransfer.Amount,

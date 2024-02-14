@@ -22,6 +22,7 @@ func TestTransferService_Create(t *testing.T) {
 
 		dbTransfer := repository.DBTransfer{
 			TransferID: "1",
+			Time:       time.Now(),
 			FromWallet: "1",
 			ToWallet:   "2",
 			Amount:     decimal.NewFromFloat(100.0),
@@ -31,7 +32,14 @@ func TestTransferService_Create(t *testing.T) {
 			ToWallet:   dbTransfer.ToWallet,
 			Amount:     dbTransfer.Amount,
 		}
-		transferDTO := handlers.TransferDTO{
+
+		inputTransferDTO := handlers.TransferDTO{
+			FromWallet: dbTransfer.FromWallet,
+			ToWallet:   dbTransfer.ToWallet,
+			Amount:     dbTransfer.Amount,
+		}
+		outputTransferDTO := handlers.TransferDTO{
+			Time:       dbTransfer.Time.Format(time.RFC3339),
 			FromWallet: transfer.FromWallet,
 			ToWallet:   transfer.ToWallet,
 			Amount:     transfer.Amount,
@@ -44,12 +52,12 @@ func TestTransferService_Create(t *testing.T) {
 			Return(&dbTransfer, nil)
 
 		ws := service.NewTransferService(repo)
-		result, err := ws.Create(context.Background(), &transferDTO)
+		result, err := ws.Create(context.Background(), &inputTransferDTO)
 		if err != nil {
 			t.Errorf("unexpected error: %s", err)
 		}
-		if result == nil || *result != transferDTO {
-			t.Errorf("got %v, want %v", result, transferDTO)
+		if result == nil || *result != outputTransferDTO {
+			t.Errorf("got %v, want %v", result, outputTransferDTO)
 		}
 	})
 
