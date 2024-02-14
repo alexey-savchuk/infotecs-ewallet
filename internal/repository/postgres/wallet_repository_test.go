@@ -1,4 +1,4 @@
-package postgres
+package postgres_test
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/alexey-savchuk/infotecs-ewallet/internal/repository/postgres"
 )
 
 func TestWalletRepository_Create(t *testing.T) {
@@ -22,7 +23,7 @@ func TestWalletRepository_Create(t *testing.T) {
 			sqlmock.NewRows([]string{"wallet_id", "balance"}).AddRow("1", 100.0),
 		)
 
-	wr := NewWalletRepository(db)
+	wr := postgres.NewWalletRepository(db)
 
 	_, err = wr.Create(context.Background())
 	if err != nil {
@@ -52,7 +53,7 @@ func TestWalletRepository_GetByWalletID(t *testing.T) {
 				sqlmock.NewRows([]string{"wallet_id", "balance"}).AddRow(walletID, 100.0),
 			)
 
-		wr := NewWalletRepository(db)
+		wr := postgres.NewWalletRepository(db)
 
 		_, err = wr.GetByWalletID(context.Background(), walletID)
 		if err != nil {
@@ -78,7 +79,7 @@ func TestWalletRepository_GetByWalletID(t *testing.T) {
 			WithArgs(walletID).
 			WillReturnError(sql.ErrNoRows)
 
-		wr := NewWalletRepository(db)
+		wr := postgres.NewWalletRepository(db)
 
 		_, err = wr.GetByWalletID(context.Background(), walletID)
 		if err == nil {

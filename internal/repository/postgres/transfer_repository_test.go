@@ -1,4 +1,4 @@
-package postgres
+package postgres_test
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/alexey-savchuk/infotecs-ewallet/internal/repository/postgres"
 	"github.com/alexey-savchuk/infotecs-ewallet/internal/service"
 	"github.com/shopspring/decimal"
 )
@@ -49,7 +50,7 @@ func TestTransferRepository_Create(t *testing.T) {
 			)
 		mock.ExpectCommit()
 
-		tr := NewTransferRepository(db)
+		tr := postgres.NewTransferRepository(db)
 
 		_, err = tr.Create(context.Background(), transfer)
 		if err != nil {
@@ -83,7 +84,7 @@ func TestTransferRepository_Create(t *testing.T) {
 			WillReturnError(sql.ErrNoRows)
 		mock.ExpectRollback()
 
-		tr := NewTransferRepository(db)
+		tr := postgres.NewTransferRepository(db)
 
 		_, err = tr.Create(context.Background(), transfer)
 		if err == nil {
@@ -122,7 +123,7 @@ func TestTransferRepository_Create(t *testing.T) {
 			WillReturnError(sql.ErrNoRows)
 		mock.ExpectRollback()
 
-		tr := NewTransferRepository(db)
+		tr := postgres.NewTransferRepository(db)
 
 		_, err = tr.Create(context.Background(), transfer)
 		if err == nil {
@@ -157,7 +158,7 @@ func TestTransferRepository_GetAllByWalletID(t *testing.T) {
 					AddRow("2", time.Now(), "3", walletID, 200.0),
 			)
 
-		tr := NewTransferRepository(db)
+		tr := postgres.NewTransferRepository(db)
 
 		_, err = tr.GetAllByWalletID(context.Background(), walletID)
 		if err != nil {
@@ -185,7 +186,7 @@ func TestTransferRepository_GetAllByWalletID(t *testing.T) {
 			WithArgs(walletID, walletID).
 			WillReturnError(sql.ErrNoRows)
 
-		tr := NewTransferRepository(db)
+		tr := postgres.NewTransferRepository(db)
 
 		_, err = tr.GetAllByWalletID(context.Background(), walletID)
 		if err == nil {
