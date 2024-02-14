@@ -9,6 +9,10 @@ services:
         condition: service_completed_successfully
     ports:
       - 8081:8080
+    networks:
+      - default
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/ewallet?sslmode=disable
 
   db:
     image: postgres
