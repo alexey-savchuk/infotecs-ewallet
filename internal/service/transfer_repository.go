@@ -10,5 +10,5 @@ import (
 
 type TransferRepository interface {
 	Create(ctx context.Context, transfer *Transfer) (*repository.DBTransfer, error)
-	GetAllByWalletID(ctx context.Context, walletID string) ([]*repository.DBTransfer, error)
+	GetAllByWalletID(ctx context.Context, walletID string) ([]repository.DBTransfer, error)
 }

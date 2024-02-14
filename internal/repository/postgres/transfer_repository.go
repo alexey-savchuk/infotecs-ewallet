@@ -67,7 +67,7 @@ func (tr *TransferRepository) Create(ctx context.Context, transfer *service.Tran
 	return &dbTransfer, nil
 }
 
-func (tr *TransferRepository) GetAllByWalletID(ctx context.Context, walletID string) ([]*repository.DBTransfer, error) {
+func (tr *TransferRepository) GetAllByWalletID(ctx context.Context, walletID string) ([]repository.DBTransfer, error) {
 	tx, err := tr.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -89,14 +89,14 @@ func (tr *TransferRepository) GetAllByWalletID(ctx context.Context, walletID str
 	}
 	defer rows.Close()
 
-	dbTransfers := make([]*repository.DBTransfer, 0)
+	dbTransfers := make([]repository.DBTransfer, 0)
 	for rows.Next() {
 		var dbTransfer repository.DBTransfer
 		err = rows.Scan(&dbTransfer.TransferID, &dbTransfer.Time, &dbTransfer.FromWallet, &dbTransfer.ToWallet, &dbTransfer.Amount)
 		if err != nil {
 			return nil, err
 		}
-		dbTransfers = append(dbTransfers, &dbTransfer)
+		dbTransfers = append(dbTransfers, dbTransfer)
 	}
 	err = tx.Commit()
 	if err != nil {

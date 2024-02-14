@@ -57,10 +57,10 @@ func (mr *MockTransferRepositoryMockRecorder) Create(ctx, transfer any) *gomock.
 }
 
 // GetAllByWalletID mocks base method.
-func (m *MockTransferRepository) GetAllByWalletID(ctx context.Context, walletID string) ([]*repository.DBTransfer, error) {
+func (m *MockTransferRepository) GetAllByWalletID(ctx context.Context, walletID string) ([]repository.DBTransfer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllByWalletID", ctx, walletID)
-	ret0, _ := ret[0].([]*repository.DBTransfer)
+	ret0, _ := ret[0].([]repository.DBTransfer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
